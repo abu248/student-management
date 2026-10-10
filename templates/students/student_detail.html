@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.full_name }}{% endblock %}
+{% block content %}
+<header class="page-heading">
+  <div>
+    <p class="eyebrow">STUDENT PROFILE</p>
+    <h1>{{ student.full_name }}</h1>
+    <p class="page-subtitle">Roll number {{ student.roll_number }}</p>
+  </div>
+  <div class="heading-actions">
+    <a href="{% url 'student_update' student.pk %}" class="btn btn-primary">Edit student</a>
+    <a href="{% url 'student_list' %}" class="btn btn-light">Back to directory</a>
+  </div>
+</header>
+<section class="content-card profile-card">
+  <div class="profile-top">
+    {% if student.photo %}
+    <img src="{{ student.photo.url }}" class="profile-photo" alt="Photo of {{ student.full_name }}">
+    {% else %}
+    <span class="profile-avatar" aria-hidden="true">{{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}</span>
+    {% endif %}
+    <div><span class="eyebrow">ENROLLED STUDENT</span><h2>{{ student.full_name }}</h2><span class="roll-badge">{{ student.roll_number }}</span></div>
+  </div>
+  <div class="profile-details">
+    <div><span>Course</span><strong>{{ student.course.name|default:"Not assigned" }}</strong></div>
+    <div><span>Email address</span><strong><a class="email-link" href="mailto:{{ student.email }}">{{ student.email }}</a></strong></div>
+    <div><span>Phone number</span><strong>{{ student.phone|default:"Not provided" }}</strong></div>
+    <div><span>Gender</span><strong>{{ student.get_gender_display }}</strong></div>
+    <div><span>Date of birth</span><strong>{{ student.date_of_birth|date:"F j, Y" }}</strong></div>
+    <div><span>Address</span><strong>{{ student.address|default:"Not provided"|linebreaksbr }}</strong></div>
+  </div>
+</section>
+{% endblock %}

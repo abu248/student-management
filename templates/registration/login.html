@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="login-layout">
+  <section class="login-intro">
+    <p class="eyebrow">WELCOME TO STUDENTSPACE</p>
+    <h1>A clearer view of every student.</h1>
+    <p>Sign in to manage your student directory, records and campus courses.</p>
+  </section>
+  <section class="content-card login-card">
+    <span class="brand-mark login-mark" aria-hidden="true">S</span>
+    <h2>Welcome back</h2>
+    <p class="page-subtitle">Log in to your account to continue.</p>
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary w-100" type="submit">Log in</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

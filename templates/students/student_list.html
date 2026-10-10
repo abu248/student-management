@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<header class="page-heading">
+  <div>
+    <p class="eyebrow">DIRECTORY</p>
+    <h1>Students</h1>
+    <p class="page-subtitle">Browse and manage your student records.</p>
+  </div>
+  <a href="{% url 'student_create' %}" class="btn btn-primary btn-add"><span aria-hidden="true">+</span> Add student</a>
+</header>
+
+<section class="content-card directory-card">
+  <div class="directory-toolbar">
+    <div><h2>All students</h2><span class="result-count">{{ page_obj.paginator.count }} records</span></div>
+    <form method="get" class="search-form" role="search">
+      <label class="visually-hidden" for="student-search">Search students</label>
+      <input id="student-search" type="search" name="q" value="{{ query }}" class="form-control" placeholder="Search name, roll no. or email">
+      <button class="btn btn-primary" type="submit">Search</button>
+      {% if query %}<a class="btn btn-light" href="{% url 'student_list' %}">Clear</a>{% endif %}
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table student-table align-middle mb-0">
+      <thead><tr><th scope="col">Student</th><th scope="col">Roll number</th><th scope="col">Course</th><th scope="col">Email</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+      <tbody>
+      {% for s in page_obj %}
+      <tr>
+        <td><a class="table-student" href="{% url 'student_detail' s.pk %}"><span class="student-avatar" aria-hidden="true">{{ s.first_name|slice:":1" }}{{ s.last_name|slice:":1" }}</span><strong>{{ s.full_name }}</strong></a></td>
+        <td><span class="roll-badge">{{ s.roll_number }}</span></td>
+        <td>{{ s.course.name|default:"Not assigned" }}</td>
+        <td><a class="email-link" href="mailto:{{ s.email }}">{{ s.email }}</a></td>
+        <td><div class="table-actions">
+          <a href="{% url 'student_detail' s.pk %}" class="btn btn-sm btn-light">View</a>
+          <a href="{% url 'student_update' s.pk %}" class="btn btn-sm btn-light">Edit</a>
+          <a href="{% url 'student_delete' s.pk %}" class="btn btn-sm btn-light action-delete">Delete</a>
+        </div></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">?</span>
+        <h3>{% if query %}No matching students{% else %}Your directory is empty{% endif %}</h3>
+        <p>{% if query %}Try another name, roll number or email address.{% else %}Add a student to start building your directory.{% endif %}</p>
+        {% if not query %}<a href="{% url 'student_create' %}" class="btn btn-primary">Add a student</a>{% endif %}
+      </div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav class="pagination-bar" aria-label="Student pages">
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    <div class="d-flex gap-2">
+      {% if page_obj.has_previous %}<a class="btn btn-sm btn-light" href="?page={{ page_obj.previous_page_number }}&amp;q={{ query }}">Previous</a>{% else %}<span class="btn btn-sm btn-light disabled">Previous</span>{% endif %}
+      {% if page_obj.has_next %}<a class="btn btn-sm btn-light" href="?page={{ page_obj.next_page_number }}&amp;q={{ query }}">Next</a>{% else %}<span class="btn btn-sm btn-light disabled">Next</span>{% endif %}
+    </div>
+  </nav>
+  {% endif %}
+</section>
+{% endblock %}

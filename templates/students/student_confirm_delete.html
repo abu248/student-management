@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Delete {{ student.full_name }}{% endblock %}
+{% block content %}
+<section class="content-card delete-card">
+  <span class="delete-icon" aria-hidden="true">!</span>
+  <p class="eyebrow">CONFIRM ACTION</p>
+  <h1>Delete {{ student.full_name }}?</h1>
+  <p>This will permanently remove this student record. This action cannot be undone.</p>
+  <form method="post" class="form-actions justify-content-center">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Yes, delete student</button>
+    <a href="{% url 'student_list' %}" class="btn btn-light">Keep student</a>
+  </form>
+</section>
+{% endblock %}
