@@ -1,6 +1,8 @@
 from datetime import date
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command, CommandError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -53,3 +55,29 @@ class StudentPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Welcome back')
+
+
+class BootstrapAdminCommandTests(TestCase):
+    def test_bootstrap_admin_creates_superuser_without_resetting_existing_password(self):
+        credentials = {
+            'DJANGO_SUPERUSER_USERNAME': 'siteadmin',
+            'DJANGO_SUPERUSER_EMAIL': 'admin@example.com',
+            'DJANGO_SUPERUSER_PASSWORD': 'initial-test-password-123',
+        }
+        user_model = get_user_model()
+        with patch.dict('os.environ', credentials):
+            call_command('bootstrap_admin')
+            user = user_model.objects.get(username='siteadmin')
+            user.set_password('changed-test-password-456')
+            user.save()
+
+            call_command('bootstrap_admin')
+
+        user.refresh_from_db()
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password('changed-test-password-456'))
+
+    def test_bootstrap_admin_rejects_partial_credentials(self):
+        with patch.dict('os.environ', {'DJANGO_SUPERUSER_USERNAME': 'siteadmin'}):
+            with self.assertRaises(CommandError):
+                call_command('bootstrap_admin')
